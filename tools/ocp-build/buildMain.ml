@@ -20,7 +20,7 @@
 *)
 
 (* TODO
-   We could force packages with missing dependencies to still be compiaboutled,
+   We could force packages with missing dependencies to still be compiled,
    since it is still possible that these missing dependencies arbue not used
    in a particular compilation scheme.
 *)
@@ -128,16 +128,20 @@ let do_install install_where install_what projects =
   in
   if already_installed <> [] then
     if !BuildArgs.auto_uninstall then begin
-      Printf.printf "Packages %s are already installed, removing first...\n"
-        (String.concat ", " (List.map bold already_installed));
+      Printf.printf "Package%s %s %s already installed, removing first...\n"
+        (match already_installed with _::_::_ -> "s" | _ -> "")
+        (String.concat ", " (List.map bold already_installed))
+        (match already_installed with _::_::_ -> "are" | _ -> "is");
       let uninstall_state = BuildOCamlInstall.uninstall_init install_where in
       List.iter
         (BuildOCamlInstall.uninstall_by_name uninstall_state)
         already_installed;
       BuildOCamlInstall.uninstall_finish uninstall_state
     end else begin
-      Printf.eprintf "Error: Packages %s are already installed."
-        (String.concat ", " (List.map bold already_installed));
+      Printf.eprintf "Error: Package%s %s %s already installed."
+        (match already_installed with _::_::_ -> "s" | _ -> "")
+        (String.concat ", " (List.map bold already_installed))
+        (match already_installed with _::_::_ -> "are" | _ -> "is");
       exit 2
     end;
 
@@ -302,13 +306,49 @@ let do_print_project_info pj =
 
   end
 
-let do_print_fancy_project_info pj =
+let do_print_fancy_project_info pj targets =
   let cantbuild = [] in
   let missing =
     List.filter
       (fun (_name,pkgs) ->
         List.exists (fun pk -> pk.package_source_kind <> "meta") pkgs)
       pj.project_missing
+  in
+  let incomplete_targets =
+    let incomplete = Array.to_list pj.project_incomplete in
+    if targets = []
+    then
+      List.map (fun pk -> pk.package_name)
+        (List.filter (fun pk -> pk.package_source_kind <> "meta") incomplete)
+    else
+      List.filter
+        (fun target ->
+          List.exists (fun pk -> pk.package_name = target) incomplete)
+        targets
+  in
+  let missing =
+    (* filter out missing packages that the targets don't (transitively)
+       depend on *)
+    let rec aux needed = function
+      | [] -> needed
+      | (name,provides)::r ->
+          if StringSet.mem name needed
+          then aux needed r
+          else if
+            List.exists
+              (fun pk -> StringSet.mem pk.package_name needed)
+              provides
+          then
+            aux (StringSet.add name needed) missing
+          else
+            aux needed r
+    in
+    let needed =
+      List.fold_left (fun n t -> StringSet.add t n)
+        StringSet.empty incomplete_targets
+    in
+    let needed = aux needed missing in
+    List.filter (fun (name,_) -> StringSet.mem name needed) missing
   in
   let missing_roots =
     (* remove all missing pkgs that depend on another to get the missing roots *)
@@ -357,7 +397,7 @@ let do_print_fancy_project_info pj =
     end
   in
   let cantbuild =
-    if pj.project_incomplete = [||] then cantbuild
+    if incomplete_targets = [] then cantbuild
     else begin
       let additional =
         List.filter
@@ -367,7 +407,8 @@ let do_print_fancy_project_info pj =
       in
       if additional <> [] then
         Printf.eprintf
-          "Additional packages %s can't be built.\n"
+          "Package%s %s can't be built.\n"
+          (match additional with _::_::_ -> "s" | _ -> "")
           (String.concat ", "
              (List.map (fun pk -> Printf.sprintf "\027[1m%s\027[m" pk.package_name)
                 additional));
@@ -515,7 +556,11 @@ let do_compile b cin ncores projects =
     let t1 = Unix.gettimeofday () in
 
     let nerrors = List.length errors in
-    Printf.eprintf
+    if !BuildEngine.stats_command_executed = 0 then
+      Printf.eprintf "%sEverything up-to-date.%s\n%!"
+      (if !BuildArgs.color then "\027[32m" else "")
+      (if !BuildArgs.color then "\027[m" else "")
+    else Printf.eprintf
       "%s in %.2fs. %d jobs (parallelism %.1fx), %d files generated.\n%!"
       (if errors = [] then
          if !BuildArgs.color then "\027[32mBuild Successful\027[m"
@@ -734,7 +779,7 @@ let build targets =
 
     if !configure_arg then save_project := true;
 
-    if !save_project then begin
+    if !save_project && not !BuildArgs.color then begin
       Printf.fprintf stderr "Updating ocp-build.root\n%!";
       BuildOptions.must_save_project ()
     end;
@@ -771,7 +816,7 @@ let build targets =
     end;
 
     if verbose 1 && !BuildArgs.color then
-      do_print_fancy_project_info pj
+      do_print_fancy_project_info pj targets
     else
       do_print_project_info pj;
 
