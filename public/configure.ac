@@ -63,7 +63,6 @@ AC_SUBST(VERSION)
 AC_CONFIG_FILES(
   Makefile.config \
   typerex.ocp \
-  packages/opam/ocp-build.opam
 )
 AC_OUTPUT
 
