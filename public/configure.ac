@@ -1,4 +1,4 @@
-AC_INIT(typerex,1.99.6-beta)
+AC_INIT(typerex,1.99.7-beta)
 CONFIGURE_ARGS=$*
 
 AC_COPYRIGHT(Copyright 2012 OcamlPro SAS)

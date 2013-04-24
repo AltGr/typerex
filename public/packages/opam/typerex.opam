@@ -8,5 +8,5 @@ build: [
 remove: [
   [ "ocp-build" "-uninstall" "typerex" ]
 ]
-depends: [ "ocamlfind" ]
+depends: [ "ocamlfind" "ocp-build" {> "1.99.6"} ]
 conflicts: [ "ocp-build"  {< "1.99"} ]
