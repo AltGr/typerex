@@ -5,8 +5,8 @@
 
   let overflow_p x =
     match x with
-        Approx_common.Overflow s -> Printf.kprintf failwith "Overflow %s" s
-      | Approx_common.InRange x -> x
+        OCamlApproxLexer.Overflow s -> Printf.kprintf failwith "Overflow %s" s
+      | OCamlApproxLexer.InRange x -> x
 
   let mkpat x = x
   let ghpat x = x
@@ -37,7 +37,7 @@ let pat_of_label lbl =
 %token BARBAR
 %token BARRBRACKET
 %token BEGIN
-%token <char Approx_common.overflow> CHAR
+%token <char OCamlApproxLexer.overflow> CHAR
 %token CLASS
 %token COLON
 %token COLONCOLON
@@ -79,9 +79,9 @@ let pat_of_label lbl =
 %token <string> INFIXOP4
 %token INHERIT
 %token INITIALIZER
-%token <int Approx_common.overflow> INT
-%token <int32 Approx_common.overflow> INT32
-%token <int64 Approx_common.overflow> INT64
+%token <int OCamlApproxLexer.overflow> INT
+%token <int32 OCamlApproxLexer.overflow> INT32
+%token <int64 OCamlApproxLexer.overflow> INT64
 %token <string> LABEL
 %token LAZY
 %token LBRACE
@@ -102,7 +102,7 @@ let pat_of_label lbl =
 %token MINUSGREATER
 %token MODULE
 %token MUTABLE
-%token <nativeint Approx_common.overflow> NATIVEINT
+%token <nativeint OCamlApproxLexer.overflow> NATIVEINT
 %token NEW
 %token OBJECT
 %token OF

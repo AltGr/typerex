@@ -11,7 +11,7 @@ fix the same file with the same compilation buffer, we should stop.
 
 open ErrorLocation
 open FixEmacs
-open Approx_lexer
+open OCamlApproxLexer
 
 (* Try to find if we can get rid of this pattern easily: lex the file
    until we find the longest pattern sequence including this pattern.

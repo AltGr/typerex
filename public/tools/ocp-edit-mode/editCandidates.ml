@@ -72,14 +72,14 @@ let keywords = [
 ]
 
 module MLI = struct
-  open Approx_lexer
+  open OCamlApproxLexer
 
   let tokens_from_file filename =
     let ic = open_in filename in
     try
       let lexbuf = Lexing.from_channel ic in
       let rec iter lexbuf tokens =
-        let token = Approx_lexer.token lexbuf in
+        let token = OCamlApproxLexer.token lexbuf in
         match token with
           EOF ->
             close_in ic;

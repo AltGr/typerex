@@ -25,7 +25,8 @@ begin library "ocp-fix-errors-lib"
   "errorLocation.ml"
   "fixEmacs.ml"
 
-  "oCamlPattern.ml" "oCamlPatternParser.mly" "fixPattern.ml"
+  "OCamlPattern.ml" "OCamlPatternParser.mly" "fixPattern.ml"
+
   "fixRecord.ml"
   "fixInterface.ml"
 
@@ -36,7 +37,7 @@ begin library "ocp-fix-errors-lib"
   "fixUnusedPatterns.ml"
 
 ]
-  requires = [ "ocaml-approx" "ocaml-parsing" "ocplib-lang" "ocplib-system" ]
+  requires = [ "ocaml-approx-lexer" "ocaml-parsing" "ocplib-lang" "ocplib-system" ]
 end
 
 begin program "ocp-fix-errors"

@@ -1,6 +1,6 @@
 
 open ErrorLocation
-open Approx_lexer
+open OCamlApproxLexer
 
 let rec to_float loc tokens b indent =
   match tokens with
@@ -21,7 +21,7 @@ let rec to_float loc tokens b indent =
 let to_float loc tokens =
   let tokens = List.rev tokens in
   List.iter (fun (token, _) ->
-    Printf.fprintf stderr "FLOAT: %s\n%!" (Approx_lexer.string_of_token token)
+    Printf.fprintf stderr "FLOAT: %s\n%!" (OCamlApproxLexer.string_of_token token)
   ) tokens;
 
   FixEmacs.(
@@ -36,10 +36,10 @@ let fix loc =
 
   let file = loc.loc_file in
   let lexbuf = Lexing.from_string file.file_content in
-  Approx_lexer.init ();
+  OCamlApproxLexer.init ();
 
   let rec iter tokens =
-    let token = Approx_lexer.token_pos lexbuf in
+    let token = OCamlApproxLexer.token_pos lexbuf in
     match token with
       | (
           (
@@ -65,7 +65,7 @@ let fix loc =
           iter  []
 
   and iter_operator tokens =
-    let token = Approx_lexer.token_pos lexbuf in
+    let token = OCamlApproxLexer.token_pos lexbuf in
     match token with
       | (
           (
@@ -84,7 +84,7 @@ let fix loc =
           iter  []
 
   and iter_value tokens =
-    let token = Approx_lexer.token_pos lexbuf in
+    let token = OCamlApproxLexer.token_pos lexbuf in
     match token with
       | (
           (

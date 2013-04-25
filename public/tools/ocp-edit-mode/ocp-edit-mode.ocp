@@ -46,7 +46,7 @@ begin program "ocp-edit-mode"
         "editMain.ml"
      ]
     requires = [ "ocplib-subcmd" "ocplib-edit-mode"
-                 "ocaml-approx" "ocplib-lang"
+                 "ocaml-approx-lexer" "ocplib-lang"
                  "ocplib-system" (* "ocaml-bincompat" *)
                  "ocaml-typing" "ocplib-project" ]
 

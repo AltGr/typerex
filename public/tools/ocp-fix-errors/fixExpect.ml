@@ -4,12 +4,12 @@
 *)
 
 
-open Approx_lexer
+open OCamlApproxLexer
 open ErrorLocation
 open FixEmacs
 
 let rec find_terminator stack lexbuf =
-  match Approx_lexer.token_pos lexbuf with
+  match OCamlApproxLexer.token_pos lexbuf with
     | LPAREN, _ -> find_terminator (RPAREN :: stack) lexbuf
     | LBRACKET, _ -> find_terminator (RBRACKET :: stack) lexbuf
     | (RPAREN | RBRACKET) as paren, (begin_pos, _) ->
@@ -43,17 +43,17 @@ let replace file list =
   )
 
 let fix_index file should_be_string abs_end_pos =
-  Approx_lexer.init ();
+  OCamlApproxLexer.init ();
   let lexbuf = Lexing.from_string file.file_content in
   Printf.fprintf stderr "abs_end_pos = %d\n%!" abs_end_pos;
   let rec iter () =
-    let token = Approx_lexer.token_pos lexbuf in
+    let token = OCamlApproxLexer.token_pos lexbuf in
     match token with
-	(Approx_lexer.EOF,_) -> assert false
+	(OCamlApproxLexer.EOF,_) -> assert false
       | (token, (begin_pos, end_pos)) ->
         Printf.fprintf stderr "begin_pos = %d\n%!" begin_pos;
         if begin_pos >= abs_end_pos then begin
-          Printf.fprintf stderr "AFTER: %s\n%!" (Approx_lexer.string_of_token token);
+          Printf.fprintf stderr "AFTER: %s\n%!" (OCamlApproxLexer.string_of_token token);
           assert (token = DOT);
           let (token, (begin_pos, end_pos)) = token_pos lexbuf in
           assert (token = LPAREN || token = LBRACKET);
@@ -100,19 +100,19 @@ let fix loc error_line next_lines =
   let instead_of = String.sub message middle_end_pos (String.length message - middle_end_pos) in
   Printf.fprintf stderr "should_be = [%s]\n%!" should_be;
   Printf.fprintf stderr "instead_of = [%s]\n%!" instead_of;
-  let should_be = Approx_lexer.tokens_of_string should_be in
-  let instead_of = Approx_lexer.tokens_of_string instead_of in
+  let should_be = OCamlApproxLexer.tokens_of_string should_be in
+  let instead_of = OCamlApproxLexer.tokens_of_string instead_of in
 
-  if should_be = [ Approx_lexer.LIDENT "string" ] &&
-    OcpList.last instead_of = Approx_lexer.LIDENT "array" then
+  if should_be = [ OCamlApproxLexer.LIDENT "string" ] &&
+    OcpList.last instead_of = OCamlApproxLexer.LIDENT "array" then
     begin
       Printf.fprintf stderr "PROBABLY _.(_) instead of _.[_]\n%!";
       fix_index file true abs_end_pos;
       exit 0
     end
   else
-  if instead_of = [ Approx_lexer.LIDENT "string" ] &&
-    OcpList.last should_be = Approx_lexer.LIDENT "array" then
+  if instead_of = [ OCamlApproxLexer.LIDENT "string" ] &&
+    OcpList.last should_be = OCamlApproxLexer.LIDENT "array" then
     begin
       Printf.fprintf stderr "PROBABLY _.[_] instead of _.(_)\n%!";
       fix_index file false abs_end_pos;
@@ -120,7 +120,7 @@ let fix loc error_line next_lines =
     end
   else begin
     match instead_of, should_be with
-        [ Approx_lexer.LIDENT t1 ], [ Approx_lexer.LIDENT t2 ] ->
+        [ OCamlApproxLexer.LIDENT t1 ], [ OCamlApproxLexer.LIDENT t2 ] ->
           begin match t1, t2 with
               "int", "float" ->
                 Printf.fprintf stderr "cas 1\n%!";
@@ -131,7 +131,7 @@ let fix loc error_line next_lines =
               let s = String.sub file.file_content loc.loc_begin_pos
                 (loc.loc_end_pos - loc.loc_begin_pos) in
               Printf.fprintf stderr "error on = [%s]\n%!" s;
-              let s = Approx_lexer.tokens_of_string s in
+              let s = OCamlApproxLexer.tokens_of_string s in
               begin
                 match s with
                     [ LIDENT _ ] ->
@@ -154,9 +154,9 @@ let fix loc error_line next_lines =
         ()
   end;
   List.iter (fun token ->
-    Printf.fprintf stderr "should_be: %s\n%!" (Approx_lexer.string_of_token token)
+    Printf.fprintf stderr "should_be: %s\n%!" (OCamlApproxLexer.string_of_token token)
   ) should_be;
 
   List.iter (fun token ->
-    Printf.fprintf stderr "instead_of: %s\n%!" (Approx_lexer.string_of_token token)
+    Printf.fprintf stderr "instead_of: %s\n%!" (OCamlApproxLexer.string_of_token token)
   ) instead_of;

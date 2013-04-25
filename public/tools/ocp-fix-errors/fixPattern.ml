@@ -12,8 +12,8 @@ module OCamlPatternParser : sig
 
 end = struct
 
-  module Lexer = Approx_lexer.Make(OCamlPatternParser)
-  module StringOfToken = Approx_tokens.StringOfToken(OCamlPatternParser)
+  module Lexer = OCamlApproxLexer.Make(OCamlPatternParser)
+  module StringOfToken = OCamlApproxLexer.StringOfToken(OCamlPatternParser)
 
   let token lexbuf =
     let token = Lexer.token lexbuf in

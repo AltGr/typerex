@@ -11,13 +11,14 @@
 (*                                                                            *)
 (******************************************************************************)
 
+{
+
 (* Instead of raising an error when a CHAR, INT, INT32, INT64 or NATIVEINT
 overflows, we just changed the returned value to take that into account. *)
+
 type 'a overflow =
   | InRange of 'a
   | Overflow of string
-
-{
 
 module type TokenSig = sig
 
@@ -33,7 +34,7 @@ module type TokenSig = sig
   | BARBAR
   | BARRBRACKET
   | BEGIN
-  | CHAR of (char Approx_common.overflow)
+  | CHAR of (char overflow)
   | CLASS
   | COLON
   | COLONCOLON
@@ -75,9 +76,9 @@ module type TokenSig = sig
   | INFIXOP4 of (string)
   | INHERIT
   | INITIALIZER
-  | INT of (int Approx_common.overflow)
-  | INT32 of (int32 Approx_common.overflow)
-  | INT64 of (int64 Approx_common.overflow)
+  | INT of (int overflow)
+  | INT32 of (int32 overflow)
+  | INT64 of (int64 overflow)
   | LABEL of (string)
   | LAZY
   | LBRACE
@@ -98,7 +99,7 @@ module type TokenSig = sig
   | MINUSGREATER
   | MODULE
   | MUTABLE
-  | NATIVEINT of (nativeint Approx_common.overflow)
+  | NATIVEINT of (nativeint overflow)
   | NEW
   | OBJECT
   | OF
@@ -154,7 +155,7 @@ module TokenStruct : TokenSig = struct
   | BARBAR
   | BARRBRACKET
   | BEGIN
-  | CHAR of (char Approx_common.overflow)
+  | CHAR of (char overflow)
   | CLASS
   | COLON
   | COLONCOLON
@@ -196,9 +197,9 @@ module TokenStruct : TokenSig = struct
   | INFIXOP4 of (string)
   | INHERIT
   | INITIALIZER
-  | INT of (int Approx_common.overflow)
-  | INT32 of (int32 Approx_common.overflow)
-  | INT64 of (int64 Approx_common.overflow)
+  | INT of (int overflow)
+  | INT32 of (int32 overflow)
+  | INT64 of (int64 overflow)
   | LABEL of (string)
   | LAZY
   | LBRACE
@@ -219,7 +220,7 @@ module TokenStruct : TokenSig = struct
   | MINUSGREATER
   | MODULE
   | MUTABLE
-  | NATIVEINT of (nativeint Approx_common.overflow)
+  | NATIVEINT of (nativeint overflow)
   | NEW
   | OBJECT
   | OF
@@ -261,7 +262,7 @@ module TokenStruct : TokenSig = struct
 end
 
 
-module StringOfToken(S : Sig) = struct
+module StringOfToken(S : TokenSig) = struct
 
   open S
 let string_of_token token =
@@ -383,16 +384,13 @@ let string_of_token token =
 
 end
 
-end
 
 
-
-module Make(Tokens : Approx_tokens.Sig) = struct
+module Make(Tokens : TokenSig) = struct
 
   open Tokens
   open OcpLang
   open Lexing
-  open Approx_common
 
   let comment_stack = ref []
   let lines_starts = ref []
@@ -934,10 +932,10 @@ let float_literal =
 
 	  let lines () = List.rev ( !lines_starts )
 
-          include Approx_tokens.StringOfToken(Tokens)
+          include StringOfToken(Tokens)
 
 	   end
 
-    include Approx_tokens.Struct
-    include (Make(Approx_tokens.Struct))
+    include TokenStruct
+    include (Make(TokenStruct))
 }
