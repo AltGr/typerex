@@ -10,14 +10,16 @@
 (*  contact@ocamlpro.com (http://www.ocamlpro.com/)                       *)
 (**************************************************************************)
 
+(*
 begin library "ocplib-subst"
   files = [ "stringSubst.ml" ]
   requires = [ "ocplib-lang" ]
 end
+*)
 
 begin library "ocplib-subst-worker"
   files = [ "substWorker.ml" ]
-  requires = [ "ocplib-system" "ocplib-subst" ]
+  requires = [ "ocplib-system" "ocplib-lang" ]
 end
 
 begin program "ocp-subst-config"
