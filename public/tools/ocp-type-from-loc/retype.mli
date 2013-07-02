@@ -1,4 +1,9 @@
+exception Type of Types.type_expr
 
-val from_loc : Location.t -> Cmt_format.binary_annots -> Types.type_expr option
+module Iterator : sig
+  val iter_structure : Typedtree.structure -> unit
+end
 
-val print_ty_from_cmt : Location.t -> string -> unit
+val current_loc: Location.t ref
+
+
