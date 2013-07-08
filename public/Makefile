@@ -46,7 +46,7 @@ installed:
 	$(OCPBUILD) -installed
 
 install:
-	$(OCPBUILD) -install \
+	$(OCPBUILD) install \
 	  -install-bundle typerex \
           -install-lib $(LIBDIR) \
           -install-bin $(BINDIR) \
