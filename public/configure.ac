@@ -67,7 +67,7 @@ AC_CONFIG_FILES(
 AC_OUTPUT
 
 echo Creating file ocp-build.root
-touch ocp-build.root
+ocp-build init
 
 echo
 echo Executables will be installed in ${bindir}
