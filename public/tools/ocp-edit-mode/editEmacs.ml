@@ -212,7 +212,7 @@ let all_mode_hook mode filename =
       "   )";
 
       "(defun ocp-prefix-longident ()";
-      "(let ((regexp \"[^a-zA-Z0-9'.]+\"))";
+      "(let ((regexp \"[^a-zA-Z0-9'._]+\"))";
       "  (message (concat \"ocp-prefix-longident of \" regexp))";
       "  (let ((point (re-search-backward regexp nil t)))";
       (* completion does not work if the identifier starts at the beginning
