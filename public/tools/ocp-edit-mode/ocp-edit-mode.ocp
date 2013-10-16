@@ -28,7 +28,7 @@ begin library "ocplib-edit-mode"
     )
 *)
          "editOptions.ml" ]
-  requires = [ "ocplib-system"  "ocp-subst-config" (syntax) ]
+  requires = [ "ocplib-system"  "ocp-subst-config" ]
   pp_requires = [ "ocp-subst-config:byte" ]
 end
 
